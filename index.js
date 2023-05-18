@@ -37,10 +37,18 @@ app.use(express.json());
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  if (!body.name) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
-      error: 'content missing',
+      error: 'name or number is missing',
     });
+  } else {
+    for (let personIndex = 0; personIndex < persons.length; personIndex++) {
+      const person = persons[personIndex];
+      
+      return response.status(400).json({
+        error: 'name must be unique'
+      })
+    }
   }
 
   const person = {
