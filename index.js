@@ -1,5 +1,8 @@
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
+
+app.use(morgan('tiny'))
 
 // initial state of persons array
 let persons = [
@@ -45,9 +48,11 @@ app.post('/api/persons', (request, response) => {
     for (let personIndex = 0; personIndex < persons.length; personIndex++) {
       const person = persons[personIndex];
       
-      return response.status(400).json({
-        error: 'name must be unique'
-      })
+      if (person.name === body.name) {
+        return response.status(400).json({
+          error: 'name must be unique'
+        })
+      }
     }
   }
 
