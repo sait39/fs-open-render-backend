@@ -20,8 +20,8 @@ app.use(express.static('build'));
 // handle json properly
 app.use(express.json());
 
-// allow for person creation
-app.post('/api/persons', (request, response) => {
+// allow for phonebookEntry creation
+app.post('/api/phonebookEntries', (request, response) => {
   const body = request.body;
 
   if (!body.name || !body.number) {
@@ -29,25 +29,10 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number is missing',
     });
   } else {
-    for (let personIndex = 0; personIndex < persons.length; personIndex++) {
-      const person = persons[personIndex];
-      
-      if (person.name === body.name) {
-        return response.status(400).json({
-          error: 'name must be unique'
-        })
-      }
-    }
+    phonebookEntry.save().then((savedPhonebookEntry) => {
+      response.json(savedPhonebookEntry);
+    });
   }
-
-  const person = {
-    id: generateId(),
-    ...request.body,
-  };
-
-  persons = persons.concat(person);
-
-  response.json(person);
 });
 
 // root page returns Hello world
@@ -58,32 +43,35 @@ app.get('/', (request, response) => {
 // info page returns info
 app.get('/info', (request, response) => {
   response.send(
-    `<p>Phonebook has info for ${persons.length} people</p>
+    `<p>Phonebook has info for ${phonebookEntries.length} people</p>
     <p>${new Date().toString()}</p>`
   );
 });
 
-// persons route returns current state of persons
-app.get('/api/persons', (request, response) => {
-  response.json(persons);
+// phonebookEntries route returns current state of phonebookEntries
+app.get('/api/phonebookEntries', (request, response) => {
+  response.json(phonebookEntries);
 });
 
-// get single person
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
+// get single phonebookEntry from database
+app.get('/api/phonebookEntries/:id', (request, response) => {
+  PhonebookEntry.findById(request.params.id).then((phonebookEntry) => {
+    response.json(phonebookEntry);
+  });
 
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  // if (phonebookEntry) {
+  //   response.json(phonebookEntry);
+  // } else {
+  //   response.status(404).end();
+  // }
 });
 
-// delete a single person
-app.delete('/api/persons/:id', (request, response) => {
+// delete a single phonebookEntry
+app.delete('/api/phonebookEntries/:id', (request, response) => {
   const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
+  phonebookEntries = phonebookEntries.filter(
+    (phonebookEntry) => phonebookEntry.id !== id
+  );
 
   response.status(204).end();
 });
