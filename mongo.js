@@ -16,9 +16,9 @@ mongoose.set('strictQuery', false);
 mongoose.connect(url);
 
 /**
- * create phonebookEntry schema
+ * create person schema
  */
-const phonebookEntrySchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
@@ -26,30 +26,30 @@ const phonebookEntrySchema = new mongoose.Schema({
 /**
  * use note schema to create model(<singular name of the model>, <schema>)
  */
-const PhonebookEntry = mongoose.model('PhonebookEntry', phonebookEntrySchema);
+const Person = mongoose.model('Person', personSchema);
 
 if (process.argv.length === 3) {
-  // Display all phonebook entries
-  PhonebookEntry.find({}).then((result) => {
-    result.forEach((phonebookEntry) => {
-      console.log(phonebookEntry);
+  // Display all Person entries
+  Person.find({}).then((result) => {
+    result.forEach((person) => {
+      console.log(person);
     });
     mongoose.connection.close();
   });
 } else if (process.argv.length === 5) {
-  // Create a phonebook entry
+  // Create a person entry
   const name = process.argv[3];
   const number = process.argv[4];
 
   // use model to create a new saveable note object
-  const phonebookEntry = new PhonebookEntry({
+  const person = new Person({
     name: name,
     number: number,
   });
 
   // persist the object in the database, and close connection
-  phonebookEntry.save().then((result) => {
-    console.log(`added ${name} number ${number} to phonebook`);
+  person.save().then((result) => {
+    console.log(`added ${name} number ${number} to person`);
     mongoose.connection.close();
   });
 }
