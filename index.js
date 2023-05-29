@@ -50,7 +50,13 @@ app.get('/info', (request, response) => {
 
 // persons route returns current state of persons
 app.get('/api/persons', (request, response) => {
-  response.json(persons);
+  Person.find({}).then((result) => {
+    response.json(result);
+    // result.forEach((person) => {
+    //   response.json(result);
+    // });
+    mongoose.connection.close();
+  });
 });
 
 // get single person from database
